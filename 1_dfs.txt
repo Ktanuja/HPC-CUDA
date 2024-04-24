@@ -1,0 +1,51 @@
+!nvcc --version
+
+!pip install git+https://github.com/afnan47/cuda.git
+
+%load_ext nvcc_plugin
+
+%%writefile depthfirst.cu
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const int MAXN = 1e5;
+vector<int> adj[MAXN+5]; // adjacency list
+bool visited[MAXN+5]; // mark visited nodes
+
+void dfs(int node) {
+    visited[node] = true;
+    cout << node << " "; // Print the visited node here
+    for (int i = 0; i < adj[node].size(); i++) {
+        int next_node = adj[node][i];
+        if (!visited[next_node]) {
+            dfs(next_node);
+        }
+    }
+}
+
+int main() {
+    cout << "Please enter the number of nodes and edges: ";
+    int n, m; // number of nodes and edges
+    cin >> n >> m;
+
+    cout << "Please enter the edges: \n";
+    for (int i = 0; i < m; ++i) {
+        int u, v;
+        cin >> u >> v; // edge from u to v
+        adj[u].push_back(v); // adding edge to adjacency list
+        adj[v].push_back(u); // assuming an undirected graph
+    }
+
+    // Assuming the starting node for DFS is 1
+    int start_node = 1;
+    cout << "DFS traversal starting from node " << start_node << ": ";
+    dfs(start_node);
+    cout << endl;
+
+    return 0;
+}
+
+
+!nvcc depthfirst.cu -o depthfirst
+!./depthfirst
